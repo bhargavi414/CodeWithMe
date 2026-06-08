@@ -4,12 +4,17 @@ import Submissions from "./pages/Submissions.jsx"
 import Problems from "./pages/Problems.jsx"
 import PageNotFound from "./pages/PageNotFound.jsx"
 import { Route, Routes, BrowserRouter,Link } from "react-router-dom"
+import Navbar from "./components/Navbar.jsx"
 
 
 
 export default function App(){
   return (
+
   <BrowserRouter>
+        <div className="bg-red">
+            <Navbar />
+        </div>
     <Routes>
       <Route path = "/" element= {<Home />} />
       <Route path = "/login" element= {<Login />} />

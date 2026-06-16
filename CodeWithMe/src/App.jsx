@@ -15,6 +15,7 @@ export default function App(){
         <div className="bg-red">
             <Navbar />
         </div>
+        
     <Routes>
       <Route path = "/" element= {<Home />} />
       <Route path = "/login" element= {<Login />} />

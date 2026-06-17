@@ -5,24 +5,24 @@ import { useState } from "react";
 
 export default function Home () {
     const navigate = useNavigate();
-    const [email, setEmail] = useState("")
-    useEffect(()=>{
-        async function verify(){
-        const response =await fetch(
-            "http://localhost:5713/profile", 
-            {
-                method: "GET",
-                headers: {
-                    "token" : localStorage.getItem("token")
+    const [email, setEmail] = useState("");
+
+    // useEffect (()=>{
+        async function getEmail(){
+            const response = await fetch(
+                "http://localhost:5713/profile",
+                {
+                    method: "GET",
+                    headers:{
+                        "token": localStorage.getItem("token")
+                    }
                 }
-            }
-        )
-        const resp= await response.json();
-        if(!resp.success) navigate("/login");
-        setEmail(resp.email)
-    }
-    verify();
-    }, [])
+            )
+            const resp = await response.json();
+            setEmail(resp.email);
+        }
+        getEmail();
+    // },[])
 
     return(
         <div>

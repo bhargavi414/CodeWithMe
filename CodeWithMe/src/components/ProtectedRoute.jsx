@@ -1,32 +1,8 @@
-import {Link, useNavigate} from "react-router-dom"
-import { useEffect } from "react";
-import { useState } from "react";
+import { Navigate } from "react-router-dom";
 
-export default function ProtectedRoute({children}){
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true)
-    useEffect(()=>{
-        async function verify(){
-        const response =await fetch(
-            "http://localhost:5713/profile", 
-            {
-                method: "GET",
-                headers: {
-                    "token" : localStorage.getItem("token")
-                }
-            }
-        )
-
-        const resp= await response.json();
-        if(!resp.success) {
-            navigate("/login");
-            return;
-        }
-        setLoading(false);
+export default function ProtectedRoute({ user, children }) {
+    if (user == null) {
+        return <Navigate to="/login" />;
     }
-    verify();
-    }, [])
-
-    if(loading) return(<div>loading...</div>)
-    else return(children)
+    return children;
 }

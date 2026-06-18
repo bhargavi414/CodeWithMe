@@ -30,6 +30,13 @@ app.get("/",(request, response)=>{
     response.send("xyz");
 })
 
+app.get("/me", auth, (request, response)=>{
+    response.json({
+        success: true,
+        email: request.user.email
+    })
+})
+
 app.post("/login", (request, response)=>{
     console.log(request.body.email)
     console.log(request.body.password)
@@ -57,12 +64,7 @@ app.post("/login", (request, response)=>{
 
 })
 
-app.get("/profile", auth, (request, response)=>{
-    response.json({
-        success: true,
-        email: request.user.email
-    })
-})
+
 app.listen(5713, ()=>{
     console.log("started")
 })

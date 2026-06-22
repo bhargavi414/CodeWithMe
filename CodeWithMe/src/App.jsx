@@ -1,6 +1,7 @@
 import Home from "./pages/Home.jsx"
 import Login from "./pages/Login.jsx"
 import Submissions from "./pages/Submissions.jsx"
+import Submission from "./pages/Submission.jsx"
 import Problems from "./pages/Problems.jsx"
 import Problem from "./pages/Problem.jsx"
 import PageNotFound from "./pages/PageNotFound.jsx"
@@ -45,6 +46,7 @@ export default function App(){
       <Route path = "/problems" element= {<ProtectedRoute user= {user}> <Problems /> </ProtectedRoute>} />
       <Route path = "/submissions" element= {<ProtectedRoute user= {user}> <Submissions /> </ProtectedRoute>} />
       <Route path = "/problems/:id" element= {<Problem />} />
+      <Route path = "/submissions/:key" element= {<Submission />} />
       <Route path = "*" element={<PageNotFound/>}/>
     </Routes>
   </BrowserRouter>

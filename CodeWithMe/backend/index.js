@@ -64,6 +64,24 @@ app.post("/login", (request, response)=>{
 
 })
 
+const submissions=[];
+app.post("/submit", (request, response)=>{
+    submissions.push(
+        {problemId : request.body.problemId, 
+        code : request.body.code, 
+        language : request.body.language
+    })
+    console.log(request.body.problemId)
+    console.log(request.body.code)
+    console.log(request.body.language)
+    response.json({
+        success: true
+    })
+})
+
+app.get("/submissions", (request, response)=>{
+    response.json(submissions);
+})
 
 app.listen(5713, ()=>{
     console.log("started")

@@ -2,6 +2,7 @@ import Home from "./pages/Home.jsx"
 import Login from "./pages/Login.jsx"
 import Submissions from "./pages/Submissions.jsx"
 import Problems from "./pages/Problems.jsx"
+import Problem from "./pages/Problem.jsx"
 import PageNotFound from "./pages/PageNotFound.jsx"
 import { Route, Routes, BrowserRouter,Link, useNavigate } from "react-router-dom"
 import Navbar from "./components/Navbar.jsx"
@@ -39,10 +40,11 @@ export default function App(){
         </div>
         
     <Routes>
-      <Route path = "/" element= {<ProtectedRoute user= {user}><Home setUser={setUser} user={user}/></ProtectedRoute>} />
+      <Route path = "/" element= {<ProtectedRoute user= {user}> <Home setUser={setUser} user={user}/> </ProtectedRoute>} />
       <Route path = "/login" element= {<Login setUser={setUser} />} />
-      <Route path = "/problems" element= {<ProtectedRoute user= {user}><Problems /></ProtectedRoute>} />
-      <Route path = "/submissions" element= {<ProtectedRoute user= {user}><Submissions /></ProtectedRoute>} />
+      <Route path = "/problems" element= {<ProtectedRoute user= {user}> <Problems /> </ProtectedRoute>} />
+      <Route path = "/submissions" element= {<ProtectedRoute user= {user}> <Submissions /> </ProtectedRoute>} />
+      <Route path = "/problems/:id" element= {<Problem />} />
       <Route path = "*" element={<PageNotFound/>}/>
     </Routes>
   </BrowserRouter>

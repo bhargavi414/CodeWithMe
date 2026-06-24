@@ -1,12 +1,23 @@
 import {Link} from "react-router-dom"
 import Navbar from "../components/Navbar"
+import { useState } from "react";
+import { useEffect } from "react";
 
 export default function Problems () {
-    const problems = [
-        {id: 1, title: "Two sum", difficulty: "easy", submitted: false},
-        {id: 2, title: "Reverse linked list", difficulty: "easy", submitted: false}
-    ];
+    const [problems, setProblems] = useState([]);
     
+    useEffect(()=>{
+        async function fetchProblems(){
+            const response = await fetch(
+                `http://localhost:5713/problems`
+            )
+
+            const result = await response.json();
+            setProblems(result)
+        }
+        fetchProblems();
+    },[]);
+
     return (
     <div className="bg-white p-6">
         {/* Header */}
@@ -20,7 +31,7 @@ export default function Problems () {
         {problems.map((problem) => {
             return (
                 <div
-                    key={problem.id}
+                    key={problem._id}
                     className="flex items-center py-3 border-b hover:bg-gray-50 transition"
                 >
                     {/* Status */}
@@ -31,7 +42,7 @@ export default function Problems () {
                     {/* Title */}
                     <div className="flex-1">
                         <Link
-                            to={`/problems/${problem.id}`}
+                            to={`/problems/${problem._id}`}
                             className="text-blue-600 hover:underline font-medium"
                         >
                             {problem.title}

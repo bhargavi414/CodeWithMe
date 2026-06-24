@@ -16,30 +16,64 @@ export default function Submissions () {
     useEffect(()=>{handler()}, []);
 
     return (
-    <div className="bg-white p-4">
-        <div className="font-bold mb-3 flex justify-between border-b pb-2">
-            <span>Problem ID</span>
-            <span>Language</span>
-            <span>Action</span>
-        </div>
+    <div className="max-w-5xl mx-auto p-6">
 
-        {history.map((element) => {
-            return (
-                <div
-                    key={element.problemId}
-                    className="flex justify-between py-2 border-b"
-                >
-                    <span>{element.problemId}</span>
-                    <span>{element.language}</span>
+    <h1 className="text-2xl font-bold mb-6">
+        Submissions History
+    </h1>
+
+    <div className="space-y-3">
+
+        {history.map((submission) => (
+            <div
+                key={submission._id}
+                className="border rounded-lg p-4 flex justify-between items-center hover:shadow-md transition"
+            >
+
+                {/* LEFT SIDE */}
+                <div>
+                    <div className="font-semibold text-lg">
+                        {submission.title}
+                    </div>
+
+                    <div className="text-sm text-gray-600 flex gap-4 mt-1">
+                        <span>{submission.language}</span>
+
+                        <span>
+                            {submission.passed} / {submission.total}
+                        </span>
+
+                        <span className="text-xs text-gray-400">
+                            {new Date(submission.createdAt).toLocaleString()}
+                        </span>
+                    </div>
+                </div>
+
+                {/* RIGHT SIDE */}
+                <div className="flex items-center gap-4">
+
+                    <span
+                        className={
+                            submission.verdict === "Accepted"
+                                ? "text-green-600 font-bold"
+                                : "text-red-600 font-bold"
+                        }
+                    >
+                        {submission.verdict}
+                    </span>
+
                     <Link
-                        to={`/submissions/${element.problemId}`}
+                        to={`/submissions/${submission._id}`}
                         className="text-blue-500 underline"
                     >
-                        View Code
+                        View
                     </Link>
                 </div>
-            );
-        })}
+
+            </div>
+        ))}
+
     </div>
+</div>
 );
 }

@@ -46,7 +46,7 @@ export default function App(){
       <Route path = "/problems" element= {<ProtectedRoute user= {user}> <Problems /> </ProtectedRoute>} />
       <Route path = "/submissions" element= {<ProtectedRoute user= {user}> <Submissions /> </ProtectedRoute>} />
       <Route path = "/problems/:id" element= {<Problem />} />
-      <Route path = "/submissions/:key" element= {<Submission />} />
+      <Route path = "/submissions/:id" element= {<Submission />} />
       <Route path = "*" element={<PageNotFound/>}/>
     </Routes>
   </BrowserRouter>

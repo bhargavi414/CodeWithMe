@@ -1,109 +1,98 @@
 import { useParams } from "react-router-dom"
 import { useState } from "react";
+import { useEffect } from "react";
 
 export default function Problem(){
     const [code, setCode] = useState("");
     const {id} = useParams();
-    const [exec, setExec]=useState("");
-    const problems = [{
-        id: 1,
-        title: "Two Sum",
-        difficulty: "Easy",
-        statement: "Given an array and a target number find the two indices whose sum is equal to target",
-        testcases : [
-            {
-                input : "4 9 2 7 11 15",
-                output : "1 2"
-            },
-            {
-                input : "5 3 4 2 1 5",
-                output : "2 3"
-            }
-        ]
-    },
-    {   
-        id: 2,
-        title: "Reverse Array",
-        difficulty: "Easy",
-        statement: "Reverse the given array, 1st line contains number of elements n, following n lines contains elements",
-        testcases : [
-            {
-                input : "4 2 7 11 15",
-                output : "15 11 7 2"
-            },
-            {
-                input : "5 3 4 2 1 5",
-                output : "5 1 2 4 3"
-            }
-        ]
-    }
-    ]
+    const [exec, setExec] = useState({});
+    const [problem, setProblem] = useState({});
 
-    const selectedProblem=problems.find((problem)=>{
-        return problem.id== id
-    });
+    useEffect(() => {
 
-    const safeDecode = (val) => {
-        try {
-            return val ? atob(val) : "";
-        } catch (e) {
-            return val;
-        }
-    };
-
-   let output = null;
-
-    const expected = selectedProblem?.expectedOutput || "";
-    const testcases = selectedProblem.testcases;
-
-    if (exec?.stdout) {
-        const userOutput = safeDecode(exec.stdout).trim();
-        const expectedOutput = expected.trim();
-
-        if (userOutput === expectedOutput) {
-            output = (
-                <div style={{ color: "green" }}>
-                    Accepted ✔
-                    <br />
-                    Output: {userOutput}
-                </div>
+        async function fetchProblem() {
+            const response = await fetch(
+                `http://localhost:5713/problem/${id}`,
+                {
+                    method : "GET"
+                }
             );
-        } 
-        else {
-            output = (
-                <div style={{ color: "red" }}>
-                    Wrong Answer ❌
-                    <br />
-                    Your Output: {userOutput}
-                    <br />
-                    Expected: {expectedOutput}
-                </div>
-            );
+            const result = await response.json();
+            setProblem(result);
         }
-    } 
-    else {
-        output = (
-            <div style={{ color: "red" }}>
-                Error (no output returned)
-            </div>
-        );
-    }
+
+        fetchProblem();
+
+    }, [id]);
+
+    if (!problem._id) {
+        return <div>Loading...</div>;
+    }   
+
+    const testcases = problem.testcases;
+    let output = null;
+
+    if (exec?.verdict) {
+
+    output = (
+        <div>
+            <h3
+                style={{
+                    color: exec.verdict === "Accepted" ? "green" : "red"
+                }}
+            >
+                {exec.verdict === "Accepted"
+                    ? "Accepted ✔"
+                    : "Wrong Answer ❌"}
+            </h3>
+
+            {exec.results.map((result, index) => (
+                <div
+                    key={index}
+                    style={{
+                        border: "1px solid gray",
+                        margin: "10px 0",
+                        padding: "10px"
+                    }}
+                >
+                    <div>Test Case {index + 1}</div>
+                    <div>Input: {result.input}</div>
+                    <div>Your Output: {result.got}</div>
+                    <div>Expected Output: {result.expected}</div>
+                    <div>
+                        Status:{" "}
+                        <span
+                            style={{
+                                color:
+                                    result.status === "passed"
+                                        ? "green"
+                                        : "red"
+                            }}
+                        >
+                            {result.status}
+                        </span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
 
     return(
         <div style={{ padding: "20px" }}>
             
             <h1 style={{ marginBottom: "10px" , fontWeight: "bold"}}>
-            {selectedProblem.title} | {selectedProblem.difficulty}
+            {problem.title} | {problem.difficulty}
             </h1>
 
             
             <p style={{ marginBottom: "20px" }}>
-            {selectedProblem.statement}
+            {problem.statement}
             </p>
 
             <h3>Example</h3>
             <pre style={{ padding: "10px", background: "#f5f5f5" }}>
-            {selectedProblem.example}
+            {problem.example}
             </pre>
 
             <textarea 
@@ -115,10 +104,10 @@ export default function Problem(){
             <button
                 onClick={async () => {
                     console.log("submit clicked")
-                    const problemId = id;
+                    const title = problem.title;
                     const language = "cpp";
                     const submission = {
-                        problemId,
+                        title,
                         code,
                         language,
                         testcases
@@ -136,30 +125,8 @@ export default function Problem(){
                     );
 
                     const result = await response.json();
-                    const token = result.token;
-
-                    let status = "Processing";
-                    let codeResult;
-
-                    while (status === "Processing") {
-
-                        await new Promise((resolve) =>
-                            setTimeout(resolve, 1000)
-                        );
-
-                        const judge = await fetch(
-                            `http://localhost:5713/submission/${token}`
-                        );
-
-                        codeResult = await judge.json();
-
-                        if (!codeResult.status) {
-                            setExec("Invalid code");
-                            return;
-                        }
-                    status = codeResult.status.description;
-                    }
-                    setExec(codeResult);
+                    setExec(result);
+                    
                 }}
 
                 style={{ marginTop: "20px" }}
@@ -171,26 +138,3 @@ export default function Problem(){
         </div>
     )
 }
-
-
-   // if (!exec) {
-    //     output = <div>Processing...</div>;
-    // }
-
-    // else if (exec?.stdout) {
-    //     output = (
-    //         <div style={{ color: "green" }}>
-    //             Accepted ✔
-    //             <br />
-    //             Output: {safeDecode(exec.stdout)}
-    //         </div>
-    //     );
-    // }
-
-    // else {
-    //     output = (
-    //         <div style={{ color: "red" }}>
-    //             Error
-    //         </div>
-    //     );
-    // }

@@ -56,7 +56,7 @@ export default function Login ({setUser}) {
                            }
                         });
                     const result = await response.json();
-                    if(result.success){
+                        if(result.success){
                         localStorage.setItem("token", result.token);
                         setUser(email);
                         navigate("/");
@@ -65,8 +65,6 @@ export default function Login ({setUser}) {
                         setError(result.error);
                     }
 
-                    
-                    
                 }}
                 >
                 Login

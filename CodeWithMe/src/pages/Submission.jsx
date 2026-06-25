@@ -7,7 +7,11 @@ export default function Submission(){
     const [history, setHistory]=useState([]);
         async function handler(){
             try{
-            const response = await fetch(`http://localhost:5713/submission/${id}`, {method : "GET"});
+            const response = await fetch(`http://localhost:5713/submission/${id}`, {
+                method : "GET",
+                headers : {
+                    "token" : localStorage.getItem("token")
+                }});
             const temp= await response.json();
             setHistory(temp);
             }

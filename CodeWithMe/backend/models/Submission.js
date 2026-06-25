@@ -38,7 +38,12 @@ const SubmissionSchema = new mongoose.Schema({
             expected: String,
             status: String
         }
-    ]
+    ],
+
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    }
 },
 {
     timestamps: true

@@ -6,7 +6,11 @@ export default function Submissions () {
     const [history, setHistory]=useState([]);
     async function handler(){
         try{
-        const response = await fetch("http://localhost:5713/submissions", {method : "GET"});
+        const response = await fetch("http://localhost:5713/submissions", {
+            method : "GET",
+            headers : {
+                "token" : localStorage.getItem("token")
+            }});
         const temp= await response.json();
         setHistory(temp);
         }
@@ -14,7 +18,7 @@ export default function Submissions () {
     }
 
     useEffect(()=>{handler()}, []);
-
+    //console.log(history);
     return (
     <div className="max-w-5xl mx-auto p-6">
 

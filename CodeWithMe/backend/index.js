@@ -1,10 +1,11 @@
 const Problem = require("./models/Problem");
 const Submission = require("./models/Submission");
+const User = require("./models/User");
 const connectDB = require("./db");
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-
+const bcrypt = require("bcrypt")
 app=express();
 app.use(express.json());
 app.use(cors());
@@ -39,33 +40,63 @@ app.get("/me", auth, (request, response)=>{
     })
 })
 
-app.post("/new_user");
-app.post("/login", (request, response)=>{
-    console.log(request.body.email)
-    console.log(request.body.password)
+app.post("/signup",async (request, response)=>{
+    const Email = request.body.email;
+    const Password = request.body.password;
+
+    const find_dupe = await User.findOne({email: Email});
+    if(find_dupe){
+        return response.status(409).json({
+            success : false,
+            error : "user already exists"
+        })
+    }
+
+    const hashedPassword =  await bcrypt.hash(Password, 10);
+
+    await User.create({
+        email : Email, 
+        password : hashedPassword
+    });
+
+    response.json({
+        success : true
+    })
+});
+
+app.post("/login", async (request, response)=>{
     const Email = request.body.email;
     const Password = request.body.password;
 
     
-    if(Email == "abc@1234" && Password=="1234") {
-        const token = jwt.sign({email : Email}, "mysecret");
+    const user = await User.findOne({email: Email})
 
-        response.status(200);
-        response.json({
+    if(!user){
+        return response.status(401).json({
+            success: false,
+            error: "Invalid Credentials"
+        })
+    }
+    const passed = await bcrypt.compare(Password, user.password);
+    if (!passed) {
+        return response.status(401).json({
+            success: false,
+            error: "Invalid Credentials"
+        });
+    }
+
+    const token = jwt.sign(
+        { email: Email },
+        "mysecret"
+    );
+
+    return response.status(200).json({
         success: true,
         error: "",
         token: token
-        })
-    }
-    else {
-        response.status(401);
-        response.json({
-        success: false,
-        error: "Invalid Credentials"
-        })
-    }
-
+    });
 })
+
 
 const langMap={
     cpp : 54,
@@ -81,7 +112,11 @@ function safeDecode(val) {
     }
 }
 let counter = 0;
-app.post("/submit", async (request, response) => {
+
+
+app.post("/submit", auth, async (request, response) => {
+    const user =await User.findOne({email : request.user.email});
+    const userId = user._id;
 
     counter=counter+1;
     const {title, code, language, testcases } = request.body;
@@ -158,7 +193,8 @@ app.post("/submit", async (request, response) => {
         verdict,
         passed,
         total: testcases.length,
-        results : result_array
+        results : result_array,
+        userId
     })
 
     response.json({
@@ -173,7 +209,7 @@ app.post("/submit", async (request, response) => {
 app.post("/seed", async (request, response)=>{
 
     await Problem.deleteMany({});
-    await Problem.create([{
+    await Problem.create({
         title: "Two sum",
         difficulty : "Easy",
         statement : "Given an array and a target number find the two indices whose sum is equal to target",
@@ -188,19 +224,27 @@ app.post("/seed", async (request, response)=>{
                 output : "2 3"
             }
         ]
-    }])
+    })
 
     response.json({
         success : true
     })
 })
 
-app.get("/submissions", async (request, response)=>{
-    const submissions = await Submission.find();
+app.get("/users", async (request, response)=>{
+    const users= await User.find();
+    response.json(users);
+})
+
+app.get("/submissions", auth, async (request, response)=>{
+    const user =await User.findOne({email : request.user.email});
+    const userId = user._id;
+
+    const submissions = await Submission.find({userId : userId});
     response.json(submissions);
 })
 
-app.get("/submission/:id", async (request, response)=>{
+app.get("/submission/:id", auth, async (request, response)=>{
     const id=request.params.id;
     const submission = await Submission.findById(id);
     response.json(submission);
@@ -222,6 +266,24 @@ app.get("/submissions/delete", async(request, response)=>{
         success : "true"
     })
 })
+
+app.get("/users/delete", async(request, response)=>{
+    await User.deleteMany({});
+    response.json({
+        success : "true"
+    })
+})
+
+app.post("/problems/create", auth, async(request, response)=>{
+    const {title, difficulty, statement, example, testcases} = request.body;
+    await Problem.create({
+        title, difficulty, statement, example, testcases
+    })
+    response.json({
+        success : true
+    })
+})
+
 connectDB();
 
 app.listen(5713, ()=>{

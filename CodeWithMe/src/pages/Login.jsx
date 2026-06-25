@@ -47,6 +47,8 @@ export default function Login ({setUser}) {
                     setError("");
                     
                     console.log("button clicked")
+
+
                     const response = await fetch(
                         "http://localhost:5713/login", 
                         {  method: "POST",
@@ -70,6 +72,17 @@ export default function Login ({setUser}) {
                 Login
                 </button>
                 
+             </div>
+             <div> Dont have an account? </div>
+             <div>
+                <button
+                className="w-full bg-gray-500 font-bold  p-2 rounded-lg"
+                onClick={
+                    ()=>navigate("/signup")
+                }
+                >
+                    SIGN UP
+                </button>
              </div>
         </div>
     </div>

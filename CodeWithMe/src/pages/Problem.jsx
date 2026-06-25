@@ -113,13 +113,15 @@ export default function Problem(){
                         testcases
                     };
 
+
                     const response = await fetch(
                         "http://localhost:5713/submit",
                         {
                             method: "POST",
                             body: JSON.stringify(submission),
                             headers: {
-                                "Content-Type": "application/json"
+                                "Content-Type": "application/json",
+                                "token" : localStorage.getItem("token")
                             }
                         }
                     );
